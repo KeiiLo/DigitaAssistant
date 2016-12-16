@@ -43,8 +43,8 @@ private static final String TAG = "BLEService";
      * Cheat
      */
 //    private static final String DEVICE_NAME = "Smart Sole 001";
-//    private static final String DEVICE_MAC = "D5:5A:3E:35:3D:34";
-    private static final String DEVICE_MAC = "C9:40:D6:D4:10:F8";
+    private static final String DEVICE_MAC = "D5:5A:3E:35:3D:34";
+//    private static final String DEVICE_MAC = "C9:40:D6:D4:10:F8";
 
     /**
      * All services/characteristics/descriptor UUIDs
@@ -93,6 +93,7 @@ private static final String TAG = "BLEService";
      */
     private boolean mEnabled;
     private boolean scanning = false;
+    private boolean connected = false;
     /**
      * Context of the instance
      */
@@ -273,8 +274,8 @@ private static final String TAG = "BLEService";
      */
     public void startScan() {
         Log.d(TAG, "Scanning devices");
-        if (!scanning) {
-            scanning = !scanning;
+        if (scanning == false && connected == false) {
+            scanning = true;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 Log.d(TAG, "start le scan");
                 ScanFilter scanFilter = new ScanFilter.Builder()
@@ -332,17 +333,17 @@ private static final String TAG = "BLEService";
      * Explicit function name FTW
      */
     private void stopScan() {
-        scanning = !scanning;
         if (mDevice == null) {
             Toast.makeText(mContext, "Couldn't find our device", Toast.LENGTH_LONG).show();
-        }
+        } else {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mBluetoothLeScanner.stopScan(scanCallBack);
         } else {
             mBluetoothAdapter.stopLeScan(this);
         }
-        if (mDevice != null) {
             connectToDevice(mDevice);
+            scanning = false;
+            connected = true;
         }
     }
 
