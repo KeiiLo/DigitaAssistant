@@ -9,6 +9,13 @@
     tools:context="com.wercup.rcup.digitalassistant.MainActivity">
 
     <ImageView
+        android:id="@+id/bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/bg" />
+
+    <ImageView
         android:id="@+id/constellation"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -28,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.60"
             android:orientation="horizontal"
-            android:paddingLeft="70dp"
+            android:paddingLeft="30dp"
             android:weightSum="5">
 
             <ImageView
@@ -45,6 +52,8 @@
                 android:layout_alignBottom="@+id/rcup_logo"
                 android:layout_alignParentEnd="true"
                 android:layout_marginBottom="15dp"
+                android:layout_marginLeft="15dp"
+                android:paddingBottom="20sp"
                 android:layout_toEndOf="@id/rcup_logo"
                 android:orientation="vertical">
 
@@ -53,13 +62,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Connected Insoles - Digital Assistant"
-                    android:textSize="20pt" />
+                    android:textSize="18pt" />
 
                 <TextView
                     android:id="@+id/date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Mardi 6 décembre - 10h03" />
+                    android:text="Mardi 6 décembre - 10h03"
+                    android:textSize="10pt" />
             </LinearLayout>
 
         </RelativeLayout>
@@ -75,7 +85,8 @@
             android:orientation="horizontal"
             android:paddingBottom="65dp"
             android:paddingLeft="65dp"
-            android:weightSum="1">
+            android:weightSum="1"
+            android:layout_marginTop="15dp">
 
             <!--<com.jjoe64.graphview.GraphView
                 android:id="@+id/graph_last_week"
@@ -91,14 +102,15 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:paddingLeft="100dp">
 
                     <TextView
                         android:id="@+id/steps"
-                        android:layout_width="wrap_content"
+                        android:layout_width="150dp"
                         android:layout_height="wrap_content"
-                        android:text="0 Steps"
-                        android:textSize="16pt"
+                        android:text="0 steps"
+                        android:textSize="12pt"
                         android:paddingLeft="15dp"
                         android:paddingRight="15dp"
                         android:textAlignment="center"
@@ -107,12 +119,12 @@
 
                     <TextView
                         android:id="@+id/kms"
-                        android:layout_width="wrap_content"
+                        android:layout_width="150dp"
                         android:layout_height="wrap_content"
-                        android:text="0 Km"
+                        android:text="0 m"
                         android:layout_toRightOf="@id/steps"
-                        android:textSize="16pt"
-                        android:layout_marginLeft="150dp"
+                        android:textSize="12pt"
+                        android:layout_marginLeft="100dp"
                         android:textAlignment="center"
                         android:paddingLeft="15dp"
                         android:paddingRight="15dp"
@@ -124,9 +136,15 @@
                     android:layout_width="350dp"
                     android:layout_height="350dp"
                     android:layout_marginBottom="25dp"
-                    android:layout_marginLeft="70dp"
+                    android:layout_marginLeft="150dp"
                     android:layout_marginTop="25dp"
                     android:background="@drawable/circle">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/moon00001"
+                        android:id="@+id/moon" />
 
                     <TextView
                         android:id="@+id/cal"
@@ -145,8 +163,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="0 constellations annihilated"
-                    android:layout_marginLeft="40dp"
-                    android:textSize="16pt" />
+                    android:layout_marginLeft="175dp"
+                    android:textSize="12pt"
+                    android:textStyle="italic"/>
 
             </LinearLayout>
 

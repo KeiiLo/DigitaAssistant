@@ -13,6 +13,8 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +29,7 @@ import com.wercup.rcup.digitalassistant.Tools.SensorTagData;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Random;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
@@ -36,8 +39,9 @@ public class MainActivity extends AppCompatActivity {
     final private static int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 124;
 
     private TextView tDate, tSteps, tCal, tKms, tTapTap;
-    private ImageView vConstell;
+    private ImageView vConstell, vCal;
     private GraphView graph;
+    private Button invisibruh;
 
     private String day;
     private String month;
@@ -46,15 +50,25 @@ public class MainActivity extends AppCompatActivity {
     private int stepCount = 0;
     private int stepTotal = 0;
     private int tapTapTotal = 0;
+    private double kCalperMinute = 3 * 3.5 * 70 / 200;
+    private int loop = 0;
     private ArrayList<Integer> steps;
-    private LineGraphSeries<DataPoint> mSeries;
-    private double graph2LastXValue = 11d;
     private BLEService mBLEService;
 
     private Runnable mTimer;
     private Runnable mReset;
     private boolean resetting = false;
 
+    private int[] moonRes = new int[] {
+            R.drawable.moon00001,
+            R.drawable.moon00002,
+            R.drawable.moon00003,
+            R.drawable.moon00004,
+            R.drawable.moon00005,
+            R.drawable.moon00006,
+            R.drawable.moon00007,
+            R.drawable.moon00008
+    };
     private int[] constellRes = new int[] {
             R.drawable.constell00001,
             R.drawable.constell00002,
@@ -114,37 +128,7 @@ public class MainActivity extends AppCompatActivity {
             R.drawable.constell00056,
             R.drawable.constell00057,
             R.drawable.constell00058,
-            R.drawable.constell00059,
-            R.drawable.constell00060,
-            R.drawable.constell00061,
-            R.drawable.constell00062,
-            R.drawable.constell00063,
-            R.drawable.constell00064,
-            R.drawable.constell00065,
-            R.drawable.constell00066,
-            R.drawable.constell00067,
-            R.drawable.constell00068,
-            R.drawable.constell00069,
-            R.drawable.constell00070,
-            R.drawable.constell00071,
-            R.drawable.constell00072,
-            R.drawable.constell00073,
-            R.drawable.constell00074,
-            R.drawable.constell00075,
-            R.drawable.constell00076,
-            R.drawable.constell00077,
-            R.drawable.constell00078,
-            R.drawable.constell00079,
-            R.drawable.constell00080,
-            R.drawable.constell00081,
-            R.drawable.constell00082,
-            R.drawable.constell00083,
-            R.drawable.constell00084,
-            R.drawable.constell00085,
-            R.drawable.constell00086,
-            R.drawable.constell00087,
-            R.drawable.constell00088,
-            R.drawable.constell00089,
+            R.drawable.constell00059
     };
 
     @Override
@@ -152,12 +136,30 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         checkPermissions();
+        /*invisibruh = (Button) findViewById(R.id.invisibruh);
+        invisibruh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateConstell(stepCount / 2);
+                updateMoon(stepCount);
+                stepCount += 2;
+                stepTotal += 2;
+                tSteps.setText(String.format(Locale.FRANCE, "%d steps", stepTotal));
+                double kms = stepTotal * randomValue();
+                if (kms < 1000) {
+                    tKms.setText(String.format(Locale.FRANCE, "%.2f m", kms));
+                } else {
+                    tKms.setText(String.format(Locale.FRANCE, "%.4f Km", kms / 1000));
+                }
+            }
+        });*/
         tDate = (TextView) findViewById(R.id.date);
         tSteps = (TextView) findViewById(R.id.steps);
         tTapTap = (TextView) findViewById(R.id.taptap_count);
         tCal = (TextView) findViewById(R.id.cal);
         tKms = (TextView) findViewById(R.id.kms);
         vConstell = (ImageView) findViewById(R.id.constellation);
+        vCal = (ImageView) findViewById(R.id.moon);
 
         Calendar c = Calendar.getInstance();
         day = c.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.US);
@@ -177,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
                 date += "th";
                 break;
         }
+
         Thread t = new Thread() {
 
             @Override
@@ -200,31 +203,27 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         t.start();
-//        graph = (GraphView) findViewById(R.id.graph_last_week);
-        // set manual X bounds
-//        graph.getViewport().setXAxisBoundsManual(true);
-//        graph.getViewport().setMinX(0);
-//        graph.getViewport().setMaxX(10);
+        final Thread calories = new Thread() {
 
-// set manual Y bounds
-//        graph.getViewport().setYAxisBoundsManual(true);
-//        graph.getViewport().setMinY(0);
-//        graph.getViewport().setMaxY(400);
-
-        mSeries = new LineGraphSeries<>(new DataPoint[] {
-                new DataPoint(0, 50),
-                new DataPoint(1, 150),
-                new DataPoint(2, 100),
-                new DataPoint(3, 50),
-                new DataPoint(4, 250),
-                new DataPoint(5, 350),
-                new DataPoint(6, 200),
-                new DataPoint(7, 75),
-                new DataPoint(8, 100),
-                new DataPoint(9, 325),
-                new DataPoint(10, 190),
-        });
-//        graph.addSeries(mSeries);
+            @Override
+            public void run() {
+                try {
+                    while (!isInterrupted()) {
+                        Thread.sleep(5000);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                loop++;
+                                String sCal = String.format(Locale.FRANCE, "%.2f %s", kCalperMinute * loop / 30, "kCal burnt");
+                                tCal.setText(sCal);
+                            }
+                        });
+                    }
+                } catch (InterruptedException e) {
+                }
+            }
+        };
+        calories.start();
         steps = new ArrayList<>();
         mBLEService = BLEService.getInstance(this);
         IntentFilter filter = new IntentFilter();
@@ -299,11 +298,16 @@ public class MainActivity extends AppCompatActivity {
                             mBLEService.sendPressureConfig(mBLEService.getmGatt());
                         } else {
                             updateConstell(stepCount / 2);
+                            updateMoon(stepTotal);
                             stepCount += 2;
                             stepTotal += 2;
                             tSteps.setText(String.format(Locale.FRANCE, "%d steps", stepTotal));
-                            tKms.setText(String.format(Locale.FRANCE, "%.2f m", stepTotal * .7));
-                            tCal.setText(String.format(Locale.FRANCE, "%d Cal burned", stepTotal));
+                            double kms = stepTotal * randomValue();
+                            if (kms < 1000) {
+                                tKms.setText(String.format(Locale.FRANCE, "%.2f m", kms));
+                            } else {
+                                tKms.setText(String.format(Locale.FRANCE, "%.4f Km", kms / 1000));
+                            }
                         }
                     }
 
@@ -357,32 +361,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-//        mTimer = new Runnable() {
-//            @Override
-//            public void run() {
-//                Log.e("TAG", "LOL");
-//                graph2LastXValue += 1d;
-//                if (steps.size() > 0)
-//                    mSeries.appendData(new DataPoint(graph2LastXValue, steps.get(steps.size() - 1)), true, 11);
-//            }
-//        };
-//        mReset = new Runnable() {
-//            @Override
-//            public void run() {
-//                Log.e("RESET", "GO");
-//                if (mBLEService.getmGatt() != null) {
-//                    Log.e("TAG", String.valueOf(stepCount));
-//                    steps.add(stepCount);
-//                    Log.e("TAG", String.valueOf(stepCount) + " " + String.valueOf(steps.size()));
-//                    BLESettings.setResetCounter(1);
-//                    BLEService.sendPressureConfig(mBLEService.getmGatt());
-//                }
-//                mHandler.postDelayed(this, 1000 * 30);
-//                mHandler.postDelayed(mTimer, 1000 * 29);
-//
-//            }
-//        };
-//        mHandler.postDelayed(mReset, 1000 * 10);
         mTimer = new Runnable() {
             @Override
             public void run() {
@@ -402,9 +380,23 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
+    private double randomValue() {
+        Random r = new Random();
+        double rangeMin = 0.7d;
+        double rangeMax = 0.8d;
+        double randomValue = rangeMin + (rangeMax - rangeMin) * r.nextDouble();
+        return randomValue;
+    }
+
     private void updateConstell(int i) {
-        if (stepCount < 178 && stepCount >= 0)
+        if (stepCount < 118 && stepCount >= 0)
             vConstell.setImageDrawable(getDrawable(constellRes[i]));
+    }
+
+    private void updateMoon(int i) {
+        double res = (i * 8 / 100) % 8;
+        Log.e("TAG", String.valueOf(res));
+        vCal.setImageDrawable(getDrawable(moonRes[(int) res]));
     }
 
     @Override
@@ -412,17 +404,5 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         mHandler.removeCallbacks(mTimer);
 //        mHandler.removeCallbacks(mReset);
-    }
-
-    private DataPoint[] generateData() {
-        int count = steps.size();
-        DataPoint[] values = new DataPoint[count];
-        for (int i = 0; i < count; i++) {
-            double x = i;
-            double y = steps.get(i);
-            DataPoint v = new DataPoint(x, y);
-            values[i] = v;
-        }
-        return values;
     }
 }
