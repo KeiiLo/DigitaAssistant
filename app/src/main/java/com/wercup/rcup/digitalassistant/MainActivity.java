@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     final private static int REQUEST_CODE_ENABLE_BLUETOOTH = 7;
     final private static int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 124;
 
-    private TextView tDate, tSteps, tCal, tKms, tTapTap;
+    private TextView tDate, tSteps, tCal, tKms, tTapTap, tCharged;
     private ImageView vConstell, vCal;
     private GraphView graph;
     private Button invisibruh;
@@ -156,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
         tDate = (TextView) findViewById(R.id.date);
         tSteps = (TextView) findViewById(R.id.steps);
         tTapTap = (TextView) findViewById(R.id.taptap_count);
+        tCharged = (TextView) findViewById(R.id.charged);
         tCal = (TextView) findViewById(R.id.cal);
         tKms = (TextView) findViewById(R.id.kms);
         vConstell = (ImageView) findViewById(R.id.constellation);
@@ -287,10 +288,16 @@ public class MainActivity extends AppCompatActivity {
                 case MSG_PRESSURE_DATA:
                     mCharacteristic = (BluetoothGattCharacteristic) msg.obj;
 //                    if (mCharacteristic.getValue()[0] != 1) {
-                    if (resetting && stepCount == 0)
+                    if (resetting && stepCount == 0) {
                         resetting = false;
+                    }
                     if (resetting == false) {
-                        if (mCharacteristic.getValue()[0] == 1) {
+                        if (stepCount < 120) {
+                            tCharged.setText(String.format("%d %% charged", stepCount * 100 / 120));
+                        } else {
+                            tCharged.setText("Ready to fire !!!");
+                        }
+                        if (mCharacteristic.getValue()[0] == 1 && stepCount > 120) {
                             tapTapTotal++;
                             tTapTap.setText(String.format(Locale.FRANCE, "%d constellations annihilated", tapTapTotal));
                             stepTotal -= 2;
@@ -330,6 +337,7 @@ public class MainActivity extends AppCompatActivity {
                                 for (int i = 0; stepCount >= i; i += 2) {
                                     mHandler.postDelayed(mTimer, 200 * i / 2);
                                 }
+                                tCharged.setText("0% charged");
                                 break;
                             case (byte) 0xB1:
                                 BLESettings.parsePressureConfig(mCharacteristic);

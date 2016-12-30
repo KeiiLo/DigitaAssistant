@@ -43,9 +43,10 @@ private static final String TAG = "BLEService";
      * Cheat
      */
 //    private static final String DEVICE_NAME = "Smart Sole 001";
-    private static final String DEVICE_MAC = "D9:4D:9D:E5:73:C3";
+//    private static final String DEVICE_MAC = "D9:4D:9D:E5:73:C3";
 //    private static final String DEVICE_MAC = "D5:5A:3E:35:3D:34";
 //    private static final String DEVICE_MAC = "C9:40:D6:D4:10:F8";
+    private static final String DEVICE_MAC = "D5:2E:D1:68:F0:28";
 
     /**
      * All services/characteristics/descriptor UUIDs

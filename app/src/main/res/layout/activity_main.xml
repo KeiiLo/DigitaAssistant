@@ -156,6 +156,17 @@
                         android:textColor="#1e2736"
                         android:textSize="16pt" />
 
+                    <TextView
+                        android:text="0% charged"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="38dp"
+                        android:id="@+id/charged"
+                        android:textColor="#1e2736"
+                        android:textSize="14pt"
+                        android:layout_below="@+id/cal"
+                        android:layout_centerHorizontal="true" />
+
                 </RelativeLayout>
 
                 <TextView
